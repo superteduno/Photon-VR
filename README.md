@@ -1,5 +1,6 @@
 # Photon-VR
- A Better and protected version of PhotonVR
+
+v1.0 IS OUT NOW IN RELEASES CHANNEL!!!
 
 A Unity Package containing all the necessary components to do VR networking with [Photon](https://photonengine.com)
 
