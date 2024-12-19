@@ -2,8 +2,7 @@
 
 v1.0 IS OUT NOW IN RELEASES CHANNEL!!!
 
-A Unity Package containing all the necessary components to do VR networking with [Photon](https://photonengine.com)
-
+Something im working on, this project will be updated as im working on my game so expect alot of updates lol.
 
 # Documentation
 By default everything is set up for a super simple system, obviously you can code some stuff yourself to make everything work for your application.
