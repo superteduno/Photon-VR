@@ -33,19 +33,19 @@ Including Photon.VR
 using Photon.VR;
 ```
 
-Connecting to the servers
+Connecting to the servers (DONT USE THIS)
 ```cs
-PhotonVRManager.Connect();
+PhotonVRManager.ConnectPoopilyDontUse();
 ```
 
 Switching Photon servers
 ```cs
-PhotonVRManager.ChangeServers("AppId", "VoiceAppId");
+PhotonVRManager.ChangeServersPoopilyDontUse("AppId", "VoiceAppId");
 ```
 
 Connecting to the servers authenticated
 ```cs
-// These will not actually work, you need to set this up with PlayFab or something else
+
 string username = "MYID";
 string token = "MYTOKEN";
 PhotonVRManager.ConnectAuthenticated(username, token);
