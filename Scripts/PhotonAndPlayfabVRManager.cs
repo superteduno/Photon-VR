@@ -16,11 +16,24 @@ using System.Linq;
 
 namespace Photon.VR
 {
-    public class PhotonVRManager : MonoBehaviourPunCallbacks
+    public class PhotonAndPlayfabVRManager : MonoBehaviourPunCallbacks
     {
+
+
+
+
+
+
+
+
         public static PhotonVRManager Manager { get; private set; }
 
+        [Header("Playfab")]
+
+        public string PlayfabID = "YOUR PLAYFAB ID HERE";
+
         [Header("Photon")]
+
         public string AppId;
         public string VoiceAppId;
         [Tooltip("Please read https://doc.photonengine.com/en-us/pun/current/connection-and-authentication/regions for more information")]
@@ -34,6 +47,7 @@ namespace Photon.VR
         public Dictionary<string, string> Cosmetics { get; private set; } = new Dictionary<string, string>();
 
         [Header("Networking")]
+        [Header("do NOT use PhotonNetwork.CreateOrJoinRandom (or whatever its called) to join random rooms, use Photon.VR(JoinRandomRoom);")]
         public string DefaultQueue = "Default";
         public int DefaultRoomLimit = 10;
 
@@ -57,7 +71,7 @@ namespace Photon.VR
                 Manager = this;
             else
             {
-                Debug.LogError("There can't be multiple PhotonVRManagers in a scene");
+                Debug.LogError("There can't be multiple PhotonVRManagers in a scene. delete the other one(s)");
                 Application.Quit();
             }
 
@@ -73,6 +87,53 @@ namespace Photon.VR
 
         }
 
+
+
+        void Awake()
+        {
+
+            // it will sign you in with your meta account and link it to your
+            // playfab account
+
+            Oculus.Platform.Core.Initialize();
+            var MetaUser = Oculus.Platform.Users.GetLoggedInUser();
+            var MetaID = MetaUser.RequestID.ToString();
+
+            if (string.IsNullOrEmpty(PlayFabSettings.staticSettings.TitleId))
+            {
+                /*()
+                Please change the titleId below to your own titleId from PlayFab Game Manager.
+                If you have already set the value in the Editor Extensions, this can be skipped.
+                */
+                PlayFabSettings.staticSettings.TitleId = PlayfabID;
+            }
+            var request = new LoginWithCustomIDRequest { CustomId = MetaID, CreateAccount = true };
+            PlayFabClientAPI.LoginWithCustomID(request, OnLoginSuccess, OnLoginFailure);
+        }
+
+
+        private void OnLoginSuccess(LoginResult result)
+        {
+            Debug.Log("Logged in to playfab");
+            Debug.Log("Adding Auth Values...");
+            PhotonNetwork.AuthValues = new AuthenticationValues();
+            PhotonNetwork.AuthValues.AuthType = CustomAuthenticationType.Custom;
+            PhotonNetwork.AuthValues.AddAuthParameter(username, PlayFabUserId);
+            PhotonNetwork.AuthValues.AddAuthParameter(token, PlayFabPhotonToken);
+
+            Debug.Log("Now i'm going to try and connect to Photon. (If you have ConnectOnAwake enabled)");
+        }
+
+
+        private void OnLoginFailure(PlayFabError error)
+        {
+            Debug.LogWarning("Failed to log in to playfab :(");
+            Debug.LogError("Here's some debug information:");
+            Debug.LogError(error.GenerateErrorReport());
+
+        }
+
+
 #if UNITY_EDITOR
         public void CheckDefaultValues()
         {
@@ -80,7 +141,7 @@ namespace Photon.VR
             if (b)
             {
                 if (string.IsNullOrEmpty(AppId))
-                    AppId = PhotonNetwork.PhotonServerSettings.AppSettings.AppIdFusion;
+                    AppId = PhotonNetwork.PhotonServerSettings.AppSettings.AppId;
 
                 if (string.IsNullOrEmpty(VoiceAppId))
                     VoiceAppId = PhotonNetwork.PhotonServerSettings.AppSettings.AppIdVoice;
@@ -141,7 +202,7 @@ namespace Photon.VR
         /// <summary>
         /// Connects to Photon using the specified AppId and VoiceAppId
         /// </summary>
-        public static bool Connect()
+        public static bool ConnectPoopilyDontUse()
         {
             if (string.IsNullOrEmpty(Manager.AppId) || string.IsNullOrEmpty(Manager.VoiceAppId))
             {
@@ -167,7 +228,7 @@ namespace Photon.VR
         {
             if (string.IsNullOrEmpty(Manager.AppId) || string.IsNullOrEmpty(Manager.VoiceAppId))
             {
-                Debug.LogError("Please input an app id");
+                Debug.LogError("Please input an app id and/or a voice app id");
                 return false;
             }
 
@@ -199,7 +260,7 @@ namespace Photon.VR
         /// </summary>
         /// <param name=Id">The new AppId</param>
         /// <param name="VoiceId">The new VoiceAppId</param>
-        public static void ChangeServers(string Id, string VoiceId)
+        public static void ChangeServersPoopilyDontUse(string Id, string VoiceId)
         {
             PhotonNetwork.Disconnect();
             Manager.AppId = Id;
@@ -413,11 +474,11 @@ namespace Photon.VR
         public string CreateRoomCode()
         {
             System.Random random = new System.Random();
-            string numbers = random.Next(99999).ToString("D5"); 
-            string letters = new string(Enumerable.Range(0, 3) 
+            string numbers = random.Next(99999).ToString("D5");
+            string letters = new string(Enumerable.Range(0, 3)
                 .Select(_ => (char)random.Next('A', 'Z' + 1))
                 .ToArray());
-            return numbers + letters; 
+            return numbers + letters;
 
         }
     }
@@ -430,4 +491,5 @@ namespace Photon.VR
         JoiningRoom,
         InRoom
     }
+    
 }
