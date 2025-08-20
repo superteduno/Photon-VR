@@ -1,8 +1,8 @@
-# Photon-VR
+# Photon-VR, playfab auth
 
-v1.0 IS OUT NOW IN RELEASES CHANNEL!!!
+this is a fork of a fork where it sets up playfab, this will probably not ever be updated after the initial push.
 
-Something im working on, this project will be updated as im working on my game so expect alot of updates lol.
+
 
 # Documentation
 By default everything is set up for a super simple system, obviously you can code some stuff yourself to make everything work for your application.
