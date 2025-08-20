@@ -29,6 +29,11 @@ namespace Photon.VR
         public static PhotonVRManager Manager { get; private set; }
 
         [Header("Playfab")]
+        [Header("Don't change the username or password, these are here for debugging")]
+
+
+        public string username;
+        public string token;
 
         public string PlayfabID = "YOUR PLAYFAB ID HERE";
 
