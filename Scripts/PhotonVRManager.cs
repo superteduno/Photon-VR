@@ -14,22 +14,21 @@ using ExitGames.Client.Photon;
 using Photon.VR.Saving;
 using System.Linq;
 
+using PlayFab;
+using Photon;
+using PlayFab.ClientModels;
+
 namespace Photon.VR
 {
-    public class PhotonAndPlayfabVRManager : MonoBehaviourPunCallbacks
+    public class PhotonVRManager : MonoBehaviourPunCallbacks
     {
 
-
-
-
-
-
-
-
+        private string PlayFabUserId;
+        private string PlayFabPhotonToken;
         public static PhotonVRManager Manager { get; private set; }
 
         [Header("Playfab")]
-        [Header("Don't change the username or password, these are here for debugging")]
+        [Header("Don't change the username or token, these are here for debugging")]
 
 
         public string username;
@@ -83,7 +82,7 @@ namespace Photon.VR
             DontDestroyOnLoad(gameObject);
 
             if (ConnectOnAwake)
-                Connect();
+                ConnectAuthenticated(username, token);
 
             if (!string.IsNullOrEmpty(PlayerPrefs.GetString("Colour")))
                 Colour = JsonUtility.FromJson<Color>(PlayerPrefs.GetString("Colour"));
@@ -121,10 +120,11 @@ namespace Photon.VR
         {
             Debug.Log("Logged in to playfab");
             Debug.Log("Adding Auth Values...");
-            PhotonNetwork.AuthValues = new AuthenticationValues();
+            PhotonNetwork.AuthValues = new AuthenticationValues("Default");
             PhotonNetwork.AuthValues.AuthType = CustomAuthenticationType.Custom;
             PhotonNetwork.AuthValues.AddAuthParameter(username, PlayFabUserId);
             PhotonNetwork.AuthValues.AddAuthParameter(token, PlayFabPhotonToken);
+            username = PlayFabUserId;
 
             Debug.Log("Now i'm going to try and connect to Photon. (If you have ConnectOnAwake enabled)");
         }
@@ -146,7 +146,7 @@ namespace Photon.VR
             if (b)
             {
                 if (string.IsNullOrEmpty(AppId))
-                    AppId = PhotonNetwork.PhotonServerSettings.AppSettings.AppId;
+                    AppId = PhotonNetwork.PhotonServerSettings.AppSettings.AppIdRealtime;
 
                 if (string.IsNullOrEmpty(VoiceAppId))
                     VoiceAppId = PhotonNetwork.PhotonServerSettings.AppSettings.AppIdVoice;
@@ -237,10 +237,7 @@ namespace Photon.VR
                 return false;
             }
 
-            AuthenticationValues authentication = new AuthenticationValues { AuthType = CustomAuthenticationType.Custom };
-            authentication.AddAuthParameter("username", username);
-            authentication.AddAuthParameter("token", token);
-            PhotonNetwork.AuthValues = authentication;
+            PhotonNetwork.AuthValues = default;
 
 
             Manager.State = ConnectionState.Connecting;
@@ -270,7 +267,7 @@ namespace Photon.VR
             PhotonNetwork.Disconnect();
             Manager.AppId = Id;
             Manager.VoiceAppId = VoiceId;
-            Connect();
+            ConnectPoopilyDontUse();
         }
 
         /// <summary>
@@ -496,5 +493,5 @@ namespace Photon.VR
         JoiningRoom,
         InRoom
     }
-    
+
 }

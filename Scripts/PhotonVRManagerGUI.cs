@@ -11,6 +11,7 @@ using UnityEngine.Networking;
 using UnityEditor;
 
 using Photon.Pun;
+using PlayFab.ClientModels;
 
 
 namespace Photon.VR
@@ -18,6 +19,11 @@ namespace Photon.VR
     [CustomEditor(typeof(PhotonVRManager))]
     public class PhotonVRManagerGUI : Editor
     {
+
+
+        public PhotonVRManager PhotonVRManager;
+        public string username = PhotonVRManager.Manager.username;
+        public string token = PhotonVRManager.Manager.token;
         private Texture2D logo;
 
         public override void OnInspectorGUI()
@@ -47,7 +53,7 @@ namespace Photon.VR
             else
                 if (!manager.ConnectOnAwake)
                 if (GUILayout.Button("Connect"))
-                    PhotonVRManager.Connect();
+                    PhotonVRManager.ConnectAuthenticated(username, token);
         }
 
         private GUIContent CreateContent(string text, string tooltip)
